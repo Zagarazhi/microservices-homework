@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  profile:
+    build: 
+      context: ./
+      dockerfile: ./apps/profile/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_HOST: profile_db
+      DATABASE_NAME: profile
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE_NAME: profile_queue
+    depends_on:
+      - profile_db
+      - rabbitmq
+      - auth
+    command: npm run start:dev profile
+
+  auth:
+    build:
+      context: ./
+      dockerfile: ./apps/auth/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      DATABASE_HOST: auth_db
+      DATABASE_NAME: auth
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE_NAME: auth_queue
+    depends_on:
+      - auth_db
+      - rabbitmq
+    command: npm run start:dev auth
+
+  profile_db:
+    image: postgres
+    environment:
+      POSTGRES_DB: profile
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./profile_db:/var/lib/postgresql/data
+
+  auth_db:
+    image: postgres
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./auth_db:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - /var/lib/rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
