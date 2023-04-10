@@ -6,6 +6,9 @@
 - [common](libs/common/): этот каталог содержит общие модули для работы микросервисов.
 - [docker compose](docker-compose.yml): файл настройки Docker.
 - [.env](.env): конфигурационный файл для разработки.
+- [Тесты auth service](apps/auth/src/auth.service.spec.ts)
+- [Тесты profile service](apps/profile/src/profile.service.spec.ts)
+- [Тесты profile controller](apps/profile/src/profile.controller.spec.ts)
 - [Примеры](examples)
 
 # API-маршруты
